@@ -58,7 +58,9 @@ class Spectrum:
                 break
         return target_crystal
 
-    def get_slice(self, crystal, mid, numbers=30):
+    def get_slice(self, mid, numbers=30, crystal=None):
+        if crystal is None:
+            crystal = self.search_crystal(mid)
         peak = np.argmin(np.abs(self.wavelength[crystal] - mid))
         if peak > numbers and (len(self.wavelength[crystal]) - peak) > numbers:
             return self.wavelength[crystal][peak-numbers: peak+numbers], \
