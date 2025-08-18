@@ -31,17 +31,21 @@ class Peak:
     def find_amplitude(self, **kwargs):
         search_background = kwargs.get('search_background', None)
         width_integration = kwargs.get('width_integration', 2.7)
+        center_deviation = kwargs.get('center_deviation', None)
 
         self._find_background(search_background)
         nl, nr, bl, br, background = self._background
 
         self._search_center()
 
+        if center_deviation is not None and np.abs(self._center - self.mid) > center_deviation:
+            self._center = self.mid
+
         left = self._center - (width_integration / 2) * self._diod
         right = self._center + (width_integration / 2) * self._diod
         self._boards = [left, right]
-        self._amplitude = fast_integration(self.wavelength, self.intesity - background,
-                                           left, right) / self._diod
+        self._amplitude = find_integral(self.wavelength, self.intesity - background,
+                                        left, right) / self._diod
 
         return self._amplitude
 
@@ -82,8 +86,18 @@ class Peak:
 
     def draw(self):
         plt.step(self.wavelength, self.intesity, color='black', where='mid')
+        mask_diods = np.where(self.mask)
+        for index in mask_diods[0]:
+            l = np.mean(self.wavelength[index - 1:index + 1])
+            r = np.mean(self.wavelength[index:index + 2])
+            v = self.intesity[index]
+            lv = np.mean(self.intesity[index - 1:index + 1])
+            rv = np.mean(self.intesity[index:index + 2])
+            plt.step([l, l, l, r, r, r], [lv, lv, v, v, rv, rv], where='mid', color='red')
         base_x = self.wavelength
         base_y = self.intesity
+        plt.axvline(self.mid, color='blue', alpha=0.5, linestyle='--')
+
         if self._background:
             nl, nr, bl, br, background = self._background
             plt.plot(base_x[nl - 1:nl + 2], base_y[nl - 1:nl + 2], ds='steps-mid', linewidth=3,
@@ -103,6 +117,14 @@ class Peak:
             xx = [left, *base_x[xx[0]], right]
 
             plt.fill_between(xx, yy, self._background[4], step='mid', color='blue', alpha=0.3)
+        if self._width:
+            plt.text(self.wavelength[self._n0], self.intesity[self._n0], round(self._width, 2))
+
+    def find_width(self):
+        self._width = find_width(self.intesity, self._n0)
+
+    def checker(self, **kwargs):
+        pass
 
     @property
     def center(self):
