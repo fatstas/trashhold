@@ -17,7 +17,7 @@ if __name__ == '__main__':
             peaks.append(peak.checker(max_width=4))
     print(time.perf_counter() - start)
     print(len(peaks))
-    peak = Peak(line, *spectrum.get_slice(line))
+
     value = peak.find_amplitude()
     print(peak.checker(max_width=4))
     peak.draw()
