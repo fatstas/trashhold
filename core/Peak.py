@@ -120,11 +120,17 @@ class Peak:
         if self._width:
             plt.text(self.wavelength[self._n0], self.intesity[self._n0], round(self._width, 2))
 
-    def find_width(self):
-        self._width = find_width(self.intesity, self._n0)
-
     def checker(self, **kwargs):
-        pass
+        max_width = kwargs.get('max_width', None)
+        if isinstance(max_width, (int, float)) and self.width > max_width:
+            return False
+        return True
+
+    @property
+    def width(self):
+        if self._width is None:
+            self._width = find_width(self.intesity, self._n0)
+        return self._width
 
     @property
     def center(self):
