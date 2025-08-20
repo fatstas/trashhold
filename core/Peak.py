@@ -56,7 +56,10 @@ class Peak:
         for i, t in zip(self.wavelength[self._n0 - 2:self._n0 + 3], self.intesity[self._n0 - 2:self._n0 + 3]):
             center += i * t
             mass += t
-        self._center = center / mass
+        try:
+            self._center = center / mass
+        except ZeroDivisionError:
+            self._center = self.mid
 
     def _find_background(self, sz=None):
         if sz is None:
@@ -122,8 +125,19 @@ class Peak:
 
     def checker(self, **kwargs):
         max_width = kwargs.get('max_width', None)
-        if isinstance(max_width, (int, float)) and self.width > max_width:
+        min_intensity = kwargs.get('min_intensity', 0.1)
+
+        if isinstance(max_width, (int, float)) and self._width and self.width > max_width:
             return False
+
+        if self._amplitude and self._amplitude < min_intensity:
+            return False
+        elif self._amplitude is None:
+            if self._background is None:
+                self._find_background()
+            if (self.intesity[self._n0] - self._background[4]) < min_intensity:
+                return False
+
         return True
 
     @property

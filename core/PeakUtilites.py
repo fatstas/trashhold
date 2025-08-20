@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def find_integral(base_x, base_y, left, right, counts=20):
     dx = (right - left) / counts
-    result = 0.0
+    result = 0
     for x in np.linspace(left, right, counts):
         idx = np.searchsorted(base_x, x)
         if idx == 0:
@@ -29,11 +29,11 @@ def find_maxima(base_y):
 
 
 def find_minima(base_y):
-    out = [base_y[0]]
+    out = [1]
     for i in range(1, len(base_y) - 1):
         if base_y[i - 1] >= base_y[i] <= base_y[i + 1]:
             out.append(i)
-    out.append(base_y[-1])
+    out.append(len(base_y) - 1)
     return np.array(out)
 
 
@@ -51,9 +51,12 @@ def find_width(y, n0):
     nl, nr = find_pairs(minimums_id, n0)
     if nl is None or nr is None:
         return None
+
     background = np.mean((y[nl], y[nr]))
     half_value = (y[n0] - background) / 2 + background
-    y = y[nl: nr + 1]
+    if y[nl] > half_value or y[nr] > half_value:
+        return None
+    y = y[nl: nr + 2]
     y_hat = []
     for i, value in enumerate(y):
         if value > half_value:
