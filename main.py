@@ -17,7 +17,7 @@ if __name__ == '__main__':
             line = spectrum.wavelength[crystal][i]
             peak = Peak(line, *spectrum.get_slice(line, crystal=crystal))
 
-            peaks.append(peak.find_amplitude())
+            peaks.append(peak)
             # if peak.checker(max_width=3.7):
             #     peak.draw()
 
