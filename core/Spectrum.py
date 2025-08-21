@@ -66,13 +66,15 @@ class Spectrum:
             return self.wavelength[crystal][peak-numbers: peak+numbers], \
                    self.intensity[crystal][peak-numbers: peak+numbers], self.mask[crystal][peak-numbers: peak+numbers]
 
-        elif peak <= numbers:
+        elif peak <= numbers < (len(self.wavelength[crystal]) - peak):
             return self.wavelength[crystal][: peak + numbers], \
                    self.intensity[crystal][: peak + numbers], self.mask[crystal][: peak + numbers]
 
-        else:
+        elif peak > numbers > (len(self.wavelength[crystal]) - peak):
             return self.wavelength[crystal][peak - numbers:], \
                    self.intensity[crystal][peak - numbers:], self.mask[crystal][peak - numbers:]
+        else:
+            return self.wavelength[crystal], self.intensity[crystal], self.mask[crystal]
 
     def search_crystal(self, mid):
         target_crystal = None
