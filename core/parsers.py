@@ -108,3 +108,23 @@ def parser_mnd(path):
         elements[element]['number_lines'] = len(elements[element]['lines'])
 
     return elements
+
+
+def parse_concentration(link):
+    with open(link, 'r') as file:
+        rm = {}
+        _elements = {}
+        elements, *file = file
+        elements = elements.split('\t')
+        for index, element in enumerate(elements[1:]):
+            _elements[index] = element
+        for sample in file:
+            name, *concentrations = sample.split('\t')
+            rm[name] = {}
+            for i, value in enumerate(concentrations[:-1]):
+                if len(value) != 0:
+                    rm[name][_elements[i]] = float(value.replace(',', '.'))
+                else:
+                    rm[name][_elements[i]] = None
+
+    return rm
