@@ -76,13 +76,15 @@ class Spectrum:
         else:
             return self.wavelength[crystal], self.intensity[crystal], self.mask[crystal]
 
-    def search_crystal(self, mid):
+    def search_crystal(self, mid, multicrystal=False):
         target_crystal = None
+        target_crystals = []
         for crystal in range(self.crystals):
             if np.min(self.wavelength[crystal]) < mid < np.max(self.wavelength[crystal]):
-                target_crystal = crystal
-                break
-        return target_crystal
+                if target_crystal is None:
+                    target_crystal = crystal
+                target_crystals.append(crystal)
+        return target_crystals if multicrystal else target_crystal
 
     def draw(self, color='black', visible_crystals=False):
         for crystal in range(self.crystals):
