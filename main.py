@@ -6,7 +6,7 @@ from core.PeakUtilites import find_maxima
 import time
 
 
-if __name__ == '__main__':
+def test1():
     peaks = []
     spectrum = Spectrum(*open_spectrum('C:\PyCharm Community Edition 2022.2.3\\temp/Silicon.txt'))
     spectrum.draw()
@@ -28,3 +28,10 @@ if __name__ == '__main__':
     # print(peak.checker(max_width=4))
     # peak.draw()
 
+
+if __name__ == '__main__':
+
+    spectrum = Spectrum(*open_spectrum('C:\PyCharm Community Edition 2022.2.3\\temp/Silicon.txt'))
+    spectrum.draw()
+
+    plt.show()
