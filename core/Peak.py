@@ -67,6 +67,15 @@ class Peak:
             nl, nr = find_pairs(minimums_id, self._n0)
 
         else:
+            if self._n0 - sz < 0:
+                sz = self._n0
+            left_zone = self.intesity[self._n0 - sz: self._n0]
+            nl = self._n0 - sz + int(np.where(left_zone == np.min(left_zone))[0][0])
+
+            if self._n0 + sz > len(self.intesity):
+                sz = self._n0
+            right_zone = self.intesity[self._n0: self._n0 + sz]
+            nr = self._n0 + int(np.where(right_zone == np.min(right_zone))[0][0])
             pass
 
         if nr is None:

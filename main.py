@@ -32,6 +32,11 @@ def test1():
 if __name__ == '__main__':
 
     spectrum = Spectrum(*open_spectrum('C:\PyCharm Community Edition 2022.2.3\\temp/Silicon.txt'))
-    spectrum.draw()
+    # spectrum.draw()
+    line = 327.4
+    peak = Peak(line, *spectrum.get_slice(line))
+    peak.find_amplitude(search_background=35)
+    peak.draw()
+
 
     plt.show()
