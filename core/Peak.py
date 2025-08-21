@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from core.PeakUtilites import *
+from core.Shape import *
 
 
 class Peak:
@@ -96,6 +97,25 @@ class Peak:
 
         self._background = [nl, nr, bl, br, background]
 
+    def shape(self):
+        width = 2.3997 * self._diod
+        asymmetry = 0
+        ratio = 0.5197
+
+        shift = (self.wavelength[self._n0] - self.center) / self._diod
+
+        cut = slice(self.background[0], self.background[1])
+        x, y = self.wavelength[cut], self.intesity[cut]
+        plt.scatter(x, y, color='red', s=10)
+
+        grid = [i for i, _ in enumerate(x)]
+
+        plt.plot(grid, voigt(grid, self._n0 - shift, width, asymmetry, ratio))
+        # for i, value in enumerate(self.wavelength):
+            # plt.scatter(value - shift, 3.5 * voigt(i, self._n0, width, asymmetry, ratio))
+
+
+
     def draw(self):
         plt.step(self.wavelength, self.intesity, color='black', where='mid')
         mask_diods = np.where(self.mask)
@@ -160,6 +180,12 @@ class Peak:
         if self._center is None:
             self._search_center()
         return self._center
+
+    @property
+    def background(self):
+        if self._background is None:
+            self._find_background()
+        return self._background
 
     @property
     def amplitude(self):

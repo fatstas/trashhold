@@ -35,7 +35,8 @@ if __name__ == '__main__':
     # spectrum.draw()
     line = 327.4
     peak = Peak(line, *spectrum.get_slice(line))
-    peak.find_amplitude(search_background=35)
+    # peak.find_amplitude(search_background=35)
+    peak.shape()
     peak.draw()
 
 
