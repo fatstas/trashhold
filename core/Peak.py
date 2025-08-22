@@ -98,8 +98,8 @@ class Peak:
         self._background = [nl, nr, bl, br, background]
 
     def shape(self):
-        width = 2.3997 * self._diod
-        asymmetry = 0
+        width = 2.3997
+        asymmetry = 0.1126
         ratio = 0.5197
 
         shift = (self.wavelength[self._n0] - self.center) / self._diod
@@ -109,8 +109,12 @@ class Peak:
         plt.scatter(x, y, color='red', s=10)
 
         grid = [i for i, _ in enumerate(x)]
+        mid = self._n0 - shift - self._background[0]
 
-        plt.plot(grid, voigt(grid, self._n0 - shift, width, asymmetry, ratio))
+        # plt.plot(x, 40 * voigt(grid, self._n0 - shift - self._background[0], width, asymmetry, ratio))
+        intensity = aprox_intensity(y, mid, width, asymmetry, ratio)
+        plt.plot(x, intensity * voigt(grid, self._n0 - shift - self._background[0], width, asymmetry, ratio) + min(y))
+        print(intensity)
         # for i, value in enumerate(self.wavelength):
             # plt.scatter(value - shift, 3.5 * voigt(i, self._n0, width, asymmetry, ratio))
 
