@@ -97,6 +97,7 @@ class Peak:
 
         self._background = [nl, nr, bl, br, background]
 
+    # Fixme: какая то хуйня вообще получилась
     def shape(self):
         width = 2.3997
         asymmetry = 0.1126
@@ -108,12 +109,12 @@ class Peak:
         x, y = self.wavelength[cut], self.intesity[cut]
         plt.scatter(x, y, color='red', s=10)
 
-        grid = [i for i, _ in enumerate(x)]
+        grid = [np.linspace(0, len(x) - 1, 50), np.linspace(min(x), max(x), 50)]
         mid = self._n0 - shift - self._background[0]
 
         # plt.plot(x, 40 * voigt(grid, self._n0 - shift - self._background[0], width, asymmetry, ratio))
         intensity = aprox_intensity(y, mid, width, asymmetry, ratio)
-        plt.plot(x, intensity * voigt(grid, self._n0 - shift - self._background[0], width, asymmetry, ratio) + min(y))
+        plt.plot(grid[1], intensity * voigt(grid[0], self._n0 - shift - self._background[0], width, asymmetry, ratio) + min(y))
         print(intensity)
         # for i, value in enumerate(self.wavelength):
             # plt.scatter(value - shift, 3.5 * voigt(i, self._n0, width, asymmetry, ratio))
