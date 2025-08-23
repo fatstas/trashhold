@@ -1,6 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+default_groups = {
+    1: 1,
+    12: 12,
+    13: (12, 1),
+    14: 14,
+    15: (14, 1),
+    17: (12, 5),
+    20: (12, 8),
+    21: (12, 8, 1),
+    23: (14, 9),
+    24: (14, 9, 1),
+    28: (14, 14),
+    42: (14, 14, 14)
+}
+
 
 def open_spectrum(link):
 
@@ -36,7 +51,7 @@ def open_spectrum(link):
 
 class Spectrum:
 
-    def __init__(self, wavelength, intensity, mask=[]):
+    def __init__(self, wavelength, intensity, mask=None):
         self.wavelength = wavelength
         self.intensity = intensity
         self.mask = mask
@@ -49,14 +64,6 @@ class Spectrum:
             for crystal in range(curent_crystal, crystals + curent_crystal):
                 self.group[crystal] = int(group)
             curent_crystal += crystals
-
-    def search_crystal(self, mid):
-        target_crystal = None
-        for crystal in range(self.crystals):
-            if np.min(self.wavelength[crystal]) < mid < np.max(self.wavelength[crystal]):
-                target_crystal = crystal
-                break
-        return target_crystal
 
     def get_slice(self, mid, numbers=30, crystal=None):
         if crystal is None:
@@ -92,6 +99,7 @@ class Spectrum:
             ynew = self.intensity[crystal]
             plt.step(xnew, ynew, where='mid', color=color)
             mask_diods = np.where(self.mask[crystal])
+
             for index in mask_diods[0]:
                 l = np.mean(xnew[index-1:index+1])
                 r = np.mean(xnew[index:index+2])
@@ -99,6 +107,7 @@ class Spectrum:
                 lv = np.mean(ynew[index-1:index+1])
                 rv = np.mean(ynew[index:index + 2])
                 plt.step([l, l, l, r, r, r], [lv, lv, v, v, rv, rv], where='mid', color='red')
+
             if visible_crystals:
                 xc = [np.min(self.wavelength[crystal]), np.min(self.wavelength[crystal]),
                       np.max(self.wavelength[crystal]),
