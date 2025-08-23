@@ -31,7 +31,8 @@ def test1():
 
 if __name__ == '__main__':
 
-    spectrum = Spectrum(*open_spectrum('C:\Atom x64 3.3 (2025.03.18)\Data\Export\GRAND_STANDARTS_14+9+1\\001-097 _ РЗ-6 - (1).txt'))
+    # spectrum = Spectrum(*open_spectrum('C:\Atom x64 3.3 (2025.03.18)\Data\Export\GRAND_STANDARTS_14+9+1\\001-097 _ РЗ-6 - (1).txt'))
+    spectrum = Spectrum(*open_spectrum('030-062 _ эт 8 - (2).txt'))
     # spectrum.draw()
     line = 269.91
     peak = Peak(line, *spectrum.get_slice(line))

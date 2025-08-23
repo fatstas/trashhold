@@ -28,8 +28,10 @@ class Peak:
         self._slope = None
         self._nearest_backround = None
         self._boards = None
+        self._shape = None
 
     def find_amplitude(self, **kwargs):
+        self._shape = None
         search_background = kwargs.get('search_background', None)
         width_integration = kwargs.get('width_integration', 2.7)
         center_deviation = kwargs.get('center_deviation', None)
@@ -97,11 +99,7 @@ class Peak:
 
         self._background = [nl, nr, bl, br, background]
 
-    # Fixme: какая то хуйня вообще получилась
-    def shape(self):
-        width = 2.3997
-        asymmetry = 0.1126
-        ratio = 0.5197
+    def shape(self, width=2.3997, asymmetry=0.1126, ratio=0.5197):
 
         shift = (self.wavelength[self._n0] - self.center) / self._diod
 
@@ -111,15 +109,10 @@ class Peak:
 
         grid = [np.linspace(0, len(x) - 1, 50), np.linspace(min(x), max(x), 50)]
         mid = self._n0 - shift - self._background[0]
-
-        # plt.plot(x, 40 * voigt(grid, self._n0 - shift - self._background[0], width, asymmetry, ratio))
         intensity = aprox_intensity(y, mid, width, asymmetry, ratio)
-        plt.plot(grid[1], intensity * voigt(grid[0], self._n0 - shift - self._background[0], width, asymmetry, ratio) + min(y))
-        print(intensity)
-        # for i, value in enumerate(self.wavelength):
-            # plt.scatter(value - shift, 3.5 * voigt(i, self._n0, width, asymmetry, ratio))
-
-
+        self._amplitude = intensity
+        self._shape = {'intensity': intensity, 'grid': grid, 'x': x, 'y': y, 'shift': shift, 'mid': mid,
+                       'width': width, 'asymmetry': asymmetry, 'ratio': ratio}
 
     def draw(self):
         plt.step(self.wavelength, self.intesity, color='black', where='mid')
@@ -135,7 +128,7 @@ class Peak:
         base_y = self.intesity
         plt.axvline(self.mid, color='blue', alpha=0.5, linestyle='--')
 
-        if self._background:
+        if self._background and self._shape is None:
             nl, nr, bl, br, background = self._background
             plt.plot(base_x[nl - 1:nl + 2], base_y[nl - 1:nl + 2], ds='steps-mid', linewidth=3,
                      color='black')
@@ -147,7 +140,7 @@ class Peak:
         if self._center:
             plt.axvline(self._center, color='red', alpha=0.5, linestyle='--')
 
-        if self._amplitude:
+        if self._amplitude and self._shape is None:
             left, right = self._boards
             xx = np.where((base_x > left) & (base_x < right))
             yy = [base_y[np.argmin(np.abs(base_x - left))], *base_y[xx[0]], base_y[np.argmin(np.abs(base_x - right))]]
@@ -156,6 +149,21 @@ class Peak:
             plt.fill_between(xx, yy, self._background[4], step='mid', color='blue', alpha=0.3)
         if self._width:
             plt.text(self.wavelength[self._n0], self.intesity[self._n0], round(self._width, 2))
+
+        if self._shape:
+            x = self._shape['x']
+            y = self._shape['y']
+            grid = self._shape['grid']
+            shift = self._shape['shift']
+            intensity = self._shape['intensity']
+            width = self._shape['width']
+            asymmetry = self._shape['asymmetry']
+            ratio = self._shape['ratio']
+
+            plt.scatter(x, y, color='red', s=10)
+            plt.plot(grid[1],
+                     intensity * voigt(grid[0], self._n0 - shift - self._background[0], width, asymmetry, ratio) + min(
+                         y))
 
     def checker(self, **kwargs):
         max_width = kwargs.get('max_width', None)
